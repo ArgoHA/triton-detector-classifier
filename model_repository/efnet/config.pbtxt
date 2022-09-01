@@ -1,0 +1,17 @@
+name: "efnet"
+platform: "tensorflow_savedmodel"
+max_batch_size: 1
+input [
+  {
+    name: "input_1"
+    data_type: TYPE_FP32
+    dims: [ 224, 224, 3 ]
+  }
+]
+output [
+  {
+    name: "pred"
+    data_type: TYPE_FP32
+    dims: [ 5 ]
+  }
+]
