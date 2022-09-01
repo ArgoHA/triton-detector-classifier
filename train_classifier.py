@@ -130,8 +130,8 @@ def eval_model(model, test_batches):
 
 
 def main():
-    path_to_folder = '/Users/argosaakyan/Data/dis_arm/classification/crops'
-    path_to_save = 'classification/classificator_model'
+    path_to_folder = ''
+    path_to_save = ''
     classes = ['small_gun', 'big_gun', 'phone', 'umbrella', 'empty']
 
     epochs = 20
