@@ -112,7 +112,7 @@ def parse_opt():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--src', type=str, default='rtsp', help='Choose source from rtsp/webcam/test')
-    parser.add_argument('--test_vid_path', type=str, default='/home/argo/gun_det/test_gun.mp4',
+    parser.add_argument('--test_vid_path', type=str, default='',
                         help='Path to test video')
 
     opt = parser.parse_args()
