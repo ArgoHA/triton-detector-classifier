@@ -11,7 +11,7 @@ from src.efnet_grpc import Efnet_grpc
 
 # Capture rtsp stream
 class Camera(object):
-    def __init__(self, src=0):
+    def __init__(self, src):
         self.capture = cv2.VideoCapture(src)
         self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 2)
 
@@ -52,10 +52,11 @@ class Video_stream:
 
 # Main pipleline
 class Pipeline:
-    def __init__(self, src, idx, opt):
+    def __init__(self, src, idx, opt, detector_tresh, classificator_tresh, classes):
         self.src = src
         self.idx = idx
         self.opt = opt
+        self.classes = classes
 
         self.images_path_save = 'images'
         self.create_images_folder()
@@ -72,7 +73,7 @@ class Pipeline:
 
 
     def save_output(self, bbox_id, classifier_res, pred_frame):
-        output_path = f'output_{self.idx}_{self.counter}_{bbox_id}_pred_{classes[classifier_res]}.jpeg'
+        output_path = f'output_{self.idx}_{self.counter}_{bbox_id}_pred_{self.classes[classifier_res]}.jpeg'
         cv2.imwrite(os.path.join(self.images_path_save, output_path), pred_frame)
 
 
@@ -121,19 +122,19 @@ def parse_opt():
 
 # Start process
 def main(opt):
+    classes = ['small_gun', 'big_gun', 'phone', 'umbrella', 'empty']
+    camera_links = ['rtsp://login:password@192.168.1.2/ISAPI/Streaming/Channels/101']
+    detector_tresh = 0.8
+    classificator_tresh = 0.7
+
     if opt.src in ['webcam', 'test']:
-        Pipeline(None, 0, opt).run()
+        Pipeline(None, 0, opt, detector_tresh, classificator_tresh, classes).run()
     else:
         for idx, src in enumerate(camera_links):
-            pipeline = Pipeline(src, idx, opt)
+            pipeline = Pipeline(src, idx, opt, detector_tresh, classificator_tresh, classes)
             Thread(target=pipeline.run).start()
 
 
 if __name__ == '__main__':
-    classes = ['small_gun', 'big_gun', 'phone', 'umbrella', 'empty']
-    camera_links = ['rtsp://login:pass@192.168.1.1/ISAPI/Streaming/Channels/101']
-    detector_tresh = 0.8
-    classificator_tresh = 0.7
-
     opt = parse_opt()
     main(opt)
