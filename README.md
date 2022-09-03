@@ -35,7 +35,9 @@ I use systemctl to make a service from triton backend, so it is always alive whe
 ```
 
 ### Start pipeline
-- For usage on you webcam use:
+Use you classes for classifier in main.py
+
+- For using you webcam as a source run:
 ```
 python3 main.py --src webcam
 ```
@@ -45,7 +47,7 @@ python3 main.py --src webcam
 python3 main.py --src test --test_vid_path 'path_to_video_here.mp4'
 ```
 
-- For running rtsp streams in parallel (define links in main.py):
+- For running rtsp streams in parallel (define links in main.py) run:
 ```
 python3 main.py
 ```
