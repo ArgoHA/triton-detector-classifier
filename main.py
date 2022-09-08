@@ -62,14 +62,25 @@ class Pipeline:
         self.create_images_folder()
         self.counter = 0
 
+        self.camera = self.get_camera()
+        self.wait_for_cam()
+
         self.detector = Yolov5_grpc(conf_thresh=detector_tresh)
         self.classifier = Efnet_grpc(conf_thresh=classificator_tresh, classes=classes)
-        self.camera = self.get_camera()
 
 
     def create_images_folder(self):
         if not os.path.exists(self.images_path_save):
             os.mkdir(self.images_path_save)
+
+
+    def wait_for_cam(self):
+        for _ in range(5):
+            if self.camera.started:
+                return True
+            else:
+                time.sleep(1)
+        return False
 
 
     def save_output(self, bbox_id, classifier_res, pred_frame):
@@ -99,7 +110,6 @@ class Pipeline:
     def run(self):
         while True:
             st_time = time.perf_counter()
-
             frame = self.camera.read()
             boxes, pred_frame, _ = self.detector.get_boxes_debug(frame)
             self.classifier_pred_loop(boxes, frame, self.classifier, pred_frame)
@@ -113,7 +123,7 @@ def parse_opt():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--src', type=str, default='rtsp', help='Choose source from rtsp/webcam/test')
-    parser.add_argument('--test_vid_path', type=str, default='',
+    parser.add_argument('--test_vid_path', type=str, default='path_to_test.mp4',
                         help='Path to test video')
 
     opt = parser.parse_args()
@@ -122,10 +132,10 @@ def parse_opt():
 
 # Start process
 def main(opt):
-    classes = ['small_gun', 'big_gun', 'phone', 'umbrella', 'empty']
-    camera_links = ['rtsp://login:password@192.168.1.2/ISAPI/Streaming/Channels/101']
-    detector_tresh = 0.8
-    classificator_tresh = 0.7
+    classes = ['small_gun', 'big_gun', 'phone', 'umbrella', 'empty'] # your classes here
+    camera_links = ['rtsp://login:password@192.168.1.2/ISAPI/Streaming/Channels/101'] # your rtsp streams
+    detector_tresh = 0.8 # detector confidence level
+    classificator_tresh = 0.7 # classifier confidence level
 
     if opt.src in ['webcam', 'test']:
         Pipeline(None, 0, opt, detector_tresh, classificator_tresh, classes).run()
